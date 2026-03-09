@@ -1,0 +1,236 @@
+@import "tailwindcss";
+
+@plugin '../../hero.ts';
+
+@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "font", sans-serif;
+  --font-mono: "monospace", monospace;
+}
+
+/* Playpen Sans: cargado via link en layout (sin next/font para evitar warning de métricas) */
+:root {
+  --font-playpen-sans-thai: "Playpen Sans", sans-serif;
+}
+.font-playpen-sans-thai {
+  font-family: var(--font-playpen-sans-thai);
+}
+
+/* =============================================================================
+   THEME: cambia solo aquí. El switch en la app alterna entre light y dark.
+   ============================================================================= */
+:root {
+  --app-background: #f8fafc;
+  --app-foreground: #121f20;
+
+  --app-space-green-portal: #35c2d4;
+
+  --app-border-gray-light: #c6e1e5;
+
+  --app-bg-header-color: #ffffff;
+
+  --app-text-gray-light: #6d808a;
+
+  --app-separator-gray-light: #e0ebec;
+
+  --app-title-section: #404b4c;
+
+  --app-input-bg-color: #ffffff;
+  --app-input-border-color: #d0dee5;
+  --app-input-placeholder-color: #1d97d9;
+  --app-input-text-color: #222c31;
+
+  /** Character Card */
+  --app-character-card-bg-color: #ffffff;
+  --app-character-card-border-color: #d0dee5;
+
+  /** Button */
+  --app-button-bg-color: #ffffff;
+  --app-button-border-color: #deeaedad;
+  --app-button-text-color: #021f23;
+
+  --app-character-card-bg-dead-color: #f2f5f6;
+  --app-button-bg-color-disabled: #dfe4e6;
+  --app-button-text-color-disabled: #8596a0;
+  --app-button-border-color-disabled: #dfe4e6;
+
+  --app-character-card-bg-shared-color: #35c2d4;
+  --app-character-card-bg-episodes-color: #eef3f5;
+
+  --app-episodes-badge-bg-color: #e7eeee;
+  --app-episodes-badge-text-color: #345054;
+  --app-episodes-badge-shared-color: #13aabe;
+  --app-episodes-badge-shared-text-color: #ffffff;
+
+  --app-footer-border-color: #eef3f5;
+}
+.dark {
+  --app-background: #121f20;
+  --app-foreground: #f8fafc;
+
+  --app-space-green-portal: #35c2d4;
+
+  --app-border-gray-light: #233234;
+
+  --app-bg-header-color: #121f20;
+
+  --app-text-gray-light: #8596a0;
+
+  --app-separator-gray-light: #223233;
+
+  --app-title-section: #35c2d4;
+
+  --app-input-bg-color: #1b262f;
+  --app-input-border-color: #30424b;
+  --app-input-placeholder-color: #5c6970;
+  --app-input-text-color: #ffffff;
+
+  /** Character Card */
+  --app-character-card-bg-color: #152329;
+  --app-character-card-border-color: #30424b;
+
+  /** Button */
+  --app-button-bg-color: #35c2d4;
+  --app-button-border-color: #2aa8b8;
+  --app-button-text-color: #021f23;
+
+  --app-character-card-bg-dead-color: #10191c;
+
+  --app-button-bg-color-disabled: #40474a;
+  --app-button-text-color-disabled: #bec5c8;
+  --app-button-border-color-disabled: #40474a;
+
+  --app-character-card-bg-shared-color: #21363f;
+  --app-character-card-bg-episodes-color: #152329;
+
+  --app-episodes-badge-bg-color: #21363f;
+  --app-episodes-badge-shared-color: #192930;
+  --app-episodes-badge-text-color: #ffffff;
+  --app-episodes-badge-shared-text-color: #ffffff;
+
+  --app-footer-border-color: #21363f;
+}
+/* ============================================================================= */
+
+.bg-app-background {
+  background-color: var(--app-background);
+}
+
+.text-app-foreground {
+  color: var(--app-foreground);
+}
+
+.text-app-space-green-portal {
+  color: var(--app-space-green-portal);
+}
+
+.bg-app-space-green-portal {
+  background-color: var(--app-space-green-portal);
+}
+
+.border-app-space-green-portal {
+  border-color: var(--app-space-green-portal);
+}
+
+.border-app-border-gray-light {
+  border-color: var(--app-border-gray-light);
+}
+
+.bg-app-bg-header-color {
+  background-color: var(--app-bg-header-color);
+}
+
+.text-app-text-gray-light {
+  color: var(--app-text-gray-light);
+}
+
+.bg-app-separator-gray-light {
+  background-color: var(--app-separator-gray-light);
+}
+
+.text-app-title-section-color {
+  color: var(--app-title-section);
+}
+
+.bg-app-input-bg-color {
+  background-color: var(--app-input-bg-color);
+}
+
+.border-app-input-border-color {
+  border-color: var(--app-input-border-color);
+}
+
+.text-app-input-placeholder-color {
+  color: var(--app-input-placeholder-color);
+}
+
+.text-app-input-text-color {
+  color: var(--app-input-text-color);
+}
+
+.bg-app-character-card-bg-color {
+  background-color: var(--app-character-card-bg-color);
+}
+
+.border-app-character-card-border-color {
+  border-color: var(--app-character-card-border-color);
+}
+
+.bg-app-button-bg-color {
+  background-color: var(--app-button-bg-color);
+}
+
+.border-app-button-border-color {
+  border-color: var(--app-button-border-color);
+}
+
+.text-app-button-text-color {
+  color: var(--app-button-text-color);
+}
+
+.bg-app-character-card-bg-dead-color {
+  background-color: var(--app-character-card-bg-dead-color);
+}
+
+.bg-app-button-bg-color-disabled {
+  background-color: var(--app-button-bg-color-disabled);
+}
+
+.text-app-button-text-color-disabled {
+  color: var(--app-button-text-color-disabled);
+}
+
+.border-app-button-border-color-disabled {
+  border-color: var(--app-button-border-color-disabled);
+}
+
+.bg-app-character-card-bg-shared-color {
+  background-color: var(--app-character-card-bg-shared-color);
+}
+
+.bg-app-episodes-badge-bg-color {
+  background-color: var(--app-episodes-badge-bg-color);
+}
+
+.text-app-episodes-badge-text-color {
+  color: var(--app-episodes-badge-text-color);
+}
+
+.bg-app-episodes-badge-shared-color {
+  background-color: var(--app-episodes-badge-shared-color);
+}
+
+.text-app-episodes-badge-shared-text-color {
+  color: var(--app-episodes-badge-shared-text-color);
+}
+
+.bg-app-character-card-bg-episodes-color {
+  background-color: var(--app-character-card-bg-episodes-color);
+}
+
+.border-app-footer-border-color {
+  border-color: var(--app-footer-border-color);
+}
