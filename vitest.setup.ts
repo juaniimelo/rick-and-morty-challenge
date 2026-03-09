@@ -32,8 +32,11 @@ const mockCanvasContext = {
   },
   set lineJoin(_: string) {},
 };
+
 if (typeof HTMLCanvasElement !== "undefined") {
-  HTMLCanvasElement.prototype.getContext = vi.fn(() => mockCanvasContext) as unknown as typeof HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext = vi.fn(
+    () => mockCanvasContext,
+  ) as unknown as typeof HTMLCanvasElement.prototype.getContext;
 }
 
 // jsdom no tiene ResizeObserver (lo usa ElectricBorder)
@@ -43,7 +46,9 @@ class MockResizeObserver {
   unobserve = vi.fn();
 }
 if (typeof globalThis.ResizeObserver === "undefined") {
-  (globalThis as unknown as { ResizeObserver: typeof MockResizeObserver }).ResizeObserver = MockResizeObserver;
+  (
+    globalThis as unknown as { ResizeObserver: typeof MockResizeObserver }
+  ).ResizeObserver = MockResizeObserver;
 }
 
 vi.mock("next/link", () => ({

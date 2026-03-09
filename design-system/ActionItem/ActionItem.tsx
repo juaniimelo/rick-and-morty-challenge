@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  createElement,
-  type ElementType,
-  type ButtonHTMLAttributes,
-} from "react";
+import { createElement, type ButtonHTMLAttributes } from "react";
 import Link from "next/link";
 import { Spinner } from "@heroui/react";
 import { cn } from "@heroui/theme";

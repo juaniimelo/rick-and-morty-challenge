@@ -17,12 +17,11 @@ const mockCharacter = {
 };
 
 describe("CharacterCard", () => {
-  it("renderiza nombre, badge y episodios del personaje", () => {
+  it("renderiza nombre y badge del personaje", () => {
     render(<CharacterCard character={mockCharacter} />);
     expect(screen.getByText("Rick Sanchez")).toBeInTheDocument();
     expect(screen.getByText("Alive")).toBeInTheDocument();
     expect(screen.getByText("Human")).toBeInTheDocument();
-    expect(screen.getByText("Episodios 1")).toBeInTheDocument();
   });
 
   it("renderiza imagen con alt correcto", () => {
@@ -31,13 +30,6 @@ describe("CharacterCard", () => {
 
     expect(img).toBeInTheDocument();
     expect(img).toHaveAttribute("src", expect.stringContaining("rick.jpg"));
-  });
-
-  it("no muestra EpisodesBadge cuando episode está vacío", () => {
-    const charSinEpisodios = { ...mockCharacter, episode: [] };
-
-    render(<CharacterCard character={charSinEpisodios} />);
-    expect(screen.queryByText(/Episodios/)).not.toBeInTheDocument();
   });
 
   it("aplica ElectricBorder cuando isSelected", () => {

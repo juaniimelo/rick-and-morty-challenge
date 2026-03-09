@@ -10,7 +10,7 @@ export const ThemeSwitch = () => {
   const { isDark, setTheme, ready } = useTheme();
 
   if (!ready) {
-    return <Switch isDisabled aria-label="Cargando tema" />;
+    return <Switch isDisabled aria-label="Cargando tema" isSelected={false} />;
   }
 
   return (

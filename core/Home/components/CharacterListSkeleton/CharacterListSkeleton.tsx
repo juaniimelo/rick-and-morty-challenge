@@ -1,32 +1,47 @@
-const CARD_COUNT = 4;
+import { Skeleton } from "@heroui/skeleton";
 
-export const CharacterListSkeleton = () => {
-  return (
-    <div className="w-full flex flex-col items-start gap-5">
-      <div className="h-8 w-48 rounded bg-app-character-card-border-color/50 animate-pulse" />
-      <div className="w-full flex flex-col items-center justify-between gap-5">
-        <div className="w-full h-10 rounded-lg bg-app-input-border-color/50 animate-pulse" />
-        <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {Array.from({ length: CARD_COUNT }).map((_, i) => (
-            <div
-              key={i}
-              className="w-full max-w-[400px] flex items-center gap-5 rounded-lg p-5 border border-app-character-card-border-color bg-app-character-card-bg-color"
-            >
-              <div className="w-[80px] h-[80px] rounded-md shrink-0 bg-app-character-card-border-color/50 animate-pulse" />
-              <div className="flex-1 flex flex-col gap-2 min-w-0">
-                <div className="h-5 w-[180px] rounded bg-app-character-card-border-color/50 animate-pulse" />
-                <div className="h-4 w-24 rounded bg-app-character-card-border-color/40 animate-pulse" />
-                <div className="h-6 w-20 rounded-md bg-app-character-card-border-color/40 animate-pulse" />
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="w-full flex items-center justify-between gap-2 mt-5">
-          <div className="h-9 w-20 rounded-md bg-app-button-border-color/50 animate-pulse" />
-          <div className="h-5 w-24 rounded bg-app-text-gray-light/30 animate-pulse" />
-          <div className="h-9 w-20 rounded-md bg-app-button-border-color/50 animate-pulse" />
-        </div>
-      </div>
+const CARD_COUNT = 8;
+
+const cardWrapperClass =
+  "w-full min-w-0 flex items-center gap-3 sm:gap-5 rounded-lg p-4 sm:p-5 border border-app-character-card-border-color bg-app-character-card-bg-color min-h-[72px] sm:min-h-[100px]";
+
+const CharacterCardSkeleton = () => (
+  <div className={cardWrapperClass}>
+    <Skeleton className="w-14 h-14 sm:w-[80px] sm:h-[80px] rounded-md shrink-0" />
+    <div className="flex-1 flex flex-col gap-0 min-w-0 overflow-hidden">
+      <Skeleton className="h-5 w-full max-w-[140px] sm:max-w-[180px] rounded" />
+      <Skeleton className="h-4 w-20 sm:w-24 rounded mt-1" />
     </div>
-  );
-};
+  </div>
+);
+
+const ListTitleSkeleton = () => (
+  <Skeleton className="h-8 w-40 sm:w-48 rounded" />
+);
+
+const SearchInputSkeleton = () => (
+  <Skeleton className="w-full h-10 rounded-lg" />
+);
+
+const PaginatorSkeleton = () => (
+  <div className="w-full flex flex-wrap items-center justify-between gap-2 mt-4 sm:mt-5">
+    <Skeleton className="h-9 w-16 sm:w-20 rounded-md shrink-0" />
+    <Skeleton className="h-5 w-20 sm:w-24 rounded shrink-0" />
+    <Skeleton className="h-9 w-16 sm:w-20 rounded-md shrink-0" />
+  </div>
+);
+
+export const CharacterListSkeleton = () => (
+  <div className="w-full min-w-0 flex flex-col items-start gap-4 sm:gap-5">
+    <ListTitleSkeleton />
+    <div className="w-full flex flex-col items-center justify-between gap-4 sm:gap-5">
+      <SearchInputSkeleton />
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        {Array.from({ length: CARD_COUNT }, (_, i) => (
+          <CharacterCardSkeleton key={i} />
+        ))}
+      </div>
+      <PaginatorSkeleton />
+    </div>
+  </div>
+);

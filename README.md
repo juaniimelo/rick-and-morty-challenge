@@ -23,15 +23,25 @@ La arquitectura sigue **Clean Architecture** en el dominio de personajes (módul
 ### Requisitos
 
 - **Node.js** 20+
-- **pnpm** (recomendado) o npm / yarn
+- Gestor de paquetes: **pnpm** (recomendado), pero también puedes usar **npm**, **yarn** o **bun**.
 
 ### Instalación
 
 1. Clonar el repositorio (o descomprimir el proyecto).
-2. Instalar dependencias:
+2. Instalar dependencias (elige tu gestor):
 
 ```bash
+# pnpm (recomendado)
 pnpm install
+
+# npm
+npm install
+
+# yarn
+yarn install
+
+# bun
+bun install
 ```
 
 3. Configurar variables de entorno:
@@ -46,7 +56,7 @@ Editar `.env` y definir la URL de la API si es necesario (por defecto se usa la 
 
 ## Arrancar el proyecto
 
-Para levantar el servidor de desarrollo con Turbopack en el puerto **3005**:
+Para levantar el servidor de desarrollo con Turbopack en el puerto **3005** (sustituye `pnpm` por `npm run`, `yarn` o `bun run` si usas otro gestor):
 
 ```bash
 pnpm dev
@@ -60,7 +70,7 @@ Abrir [http://localhost:3005](http://localhost:3005) en el navegador.
 
 ### Lint
 
-Ejecutar ESLint y aplicar correcciones automáticas:
+Ejecutar ESLint y aplicar correcciones automáticas (sustituye `pnpm` por tu gestor si prefieres otro):
 
 ```bash
 pnpm lint
@@ -86,7 +96,7 @@ pnpm test:watch
 pnpm test:coverage
 ```
 
-- **Tests de Storybook** (requiere `pnpm exec playwright install`):
+- **Tests de Storybook** (requiere `pnpm exec playwright install` o el equivalente en tu gestor):
 
 ```bash
 pnpm test:storybook
@@ -105,6 +115,30 @@ Levantar la app en modo producción:
 ```bash
 pnpm start
 ```
+
+### Docker
+
+Para levantar la aplicación en un contenedor Docker (build de producción usando el `Dockerfile` incluido):
+
+1. **Construir la imagen**:
+
+```bash
+docker build -t conexa-challenge .
+```
+
+2. **Crear el archivo de entorno (si no existe)**:
+
+```bash
+cp .env.example .env
+```
+
+3. **Levantar el contenedor** (puerto 3000 por defecto):
+
+```bash
+docker run --env-file .env -p 3000:3000 conexa-challenge
+```
+
+Luego abrir [http://localhost:3000](http://localhost:3000) en el navegador.
 
 ---
 
@@ -147,9 +181,10 @@ Estructura de carpetas y responsabilidades, pensada como guía para navegar el c
 ### `app/`
 
 - **`layout.tsx`**: Layout raíz (metadata, viewport, fuentes, Providers con tema y Apollo).
-- **`page.tsx`**: Página principal; obtiene datos iniciales con `getCharacters` (Server Action) y renderiza `MainProvider` + `HomeLayout`.
+- **`page.tsx`**: Página principal; envuelve `HomeLayout` en `Suspense` con un skeleton (`HomeLayoutSkeleton`).
 - **`error.tsx`**: Página de error custom (design system: TitleText, Paragraph, ActionItem, reintentar / volver al inicio).
 - **`not-found.tsx`**: Página 404 custom (mismo estilo que error, enlace a inicio).
+- **`api/characters/route.ts`**: API interna REST que delega en `ModuleFactory` + `CharacterModule` para obtener personajes; usada por el cliente (paginación/búsqueda) a través de `characterClient.api.ts`.
 
 ### `config/`
 
@@ -161,19 +196,26 @@ Estructura de carpetas y responsabilidades, pensada como guía para navegar el c
 
 Contiene la feature **Home** (comparador de personajes).
 
-- **`Home/actions/character.action.ts`**: Server Action que usa `ModuleFactory` y el módulo Character para obtener personajes y devolver datos planos para el cliente.
+- **`Home/actions/character.action.ts`**: Server Action que usa `ModuleFactory` y el módulo Character para obtener personajes y devolver datos planos para el cliente (se usa en la carga inicial SSR).
+- **`Home/services/characterClient.api.ts`**: Cliente de la API interna `/api/characters` para cargar personajes desde el navegador (paginación y búsqueda).
 - **`Home/context/`**
-  - **`MainContext.tsx`**: Estado global del comparador (listas 1 y 2, personajes seleccionados, paginación, búsqueda, `loadList`, `setSelectedCharacter`, etc.).
+  - **`MainContext.tsx`**: Estado global del comparador, separado por responsabilidad:
+    - gestión de listas (list1, list2, `loadList`, `setListPage`, `setListName`, `searchList`);
+    - gestión de selección (`selectedCharacter1`, `selectedCharacter2`, `setSelectedCharacter`, ids seleccionados).
   - **`characters-state.type.ts`**: Tipos planos (CharacterPlain, CharacterInfoPlain, ListState, etc.) usados por la UI.
 - **`Home/layout/`**
-  - **`HomeLayout.tsx`**: Orquesta MainContent, HeaderMenu, CharactersLayout, Separator, EpisodesLayout (si hay dos seleccionados), Footer.
+  - **`HomeLayout.tsx`**: Server Component que obtiene los datos iniciales con la Server Action `getCharacters`, crea el `MainProvider` e inyecta MainContent, HeaderMenu, CharactersLayout, EpisodesLayout y Footer.
   - **`CharactersLayout.tsx`**: Dos columnas con listas de personajes (CharacterList + búsqueda y paginación).
-  - **`EpisodesLayout.tsx`**: Vista de episodios compartidos entre los dos personajes seleccionados.
+  - **`EpisodesLayout.tsx`**: Vista de episodios (por personaje y compartidos) entre los dos personajes seleccionados.
 - **`Home/components/`**
   - **CharacterList**: Lista de personajes por columna (CharacterCard, InputText, CharacterPaginator).
-  - **SelectedCharacterCard**: Card del personaje seleccionado con detalle.
+  - **SelectedCharacterCard**: Card del personaje seleccionado con título y `EpisodesBadge`.
   - **EpisodeList**: Lista de episodios (compartidos o por personaje).
-  - **LoadingSkeleton**: Skeleton de carga.
+  - **ListLoading / skeletons**: Skeletons de carga para listas y layout.
+- **`Home/hooks/`**
+  - **`useCharacterList`**: Hook para manejar estado derivado de cada lista (búsqueda, paginación, selección).
+  - **`useHomeLayout`**: Hook para saber si se puede comparar (ambos personajes seleccionados).
+  - **`useEpisodesLayout`**: Hook para gestionar el drawer de episodios y el cálculo de episodios compartidos.
 - **`Home/utils/episode.utils.ts`**: Utilidades de dominio (ej. `getSharedEpisodes`); con tests en `episode.utils.test.ts`.
 - **`Home/types/common.ts`**: Tipos comunes de la feature Home.
 
@@ -184,7 +226,7 @@ Componentes UI reutilizables, exportados desde **`index.ts`**:
 - **Layout / estructura**: MainContent, MainSection, MainArticle, Separator, HeaderMenu, Footer.
 - **Tipografía**: TitleText, Paragraph.
 - **Formularios / controles**: InputText, ActionItem (botón o Link de Next), Switch (ThemeSwitch).
-- **Personajes**: CharacterCard, CharacterBadge, EpisodesBadge, CharacterPaginator.
+- **Personajes**: CharacterCard (tarjeta de personaje), CharacterBadge (estado/especie), EpisodesBadge (badge de episodios reutilizable), CharacterPaginator.
 - **Efectos**: ElectricBorder.
 - **Marca**: Logo.
 
@@ -196,36 +238,34 @@ Infraestructura y dominio compartidos.
 
 - **`apollo/`**
   - **server/apollo.server.ts**: Creación del cliente Apollo para Server Components / Server Actions.
-  - **client/apollo.client.ts**: Cliente para Client Components.
-  - **provider/provider.apollo.tsx**: Provider de Apollo en el árbol de React.
 - **`graphql/`**: Queries (ej. `queries/character/character.query.ts` con `GET_ALL_CHARACTERS`).
 - **`modules/Character/`** (Clean Architecture)
   - **domain/**: Entidades (Character, CharacterInfo), interfaces, ports, tipos.
-  - **application/**: Casos de uso (ej. get-all-characters.uc.ts).
-  - **infraestructure/**: Adaptadores, repositorios (Apollo), mappers, DTOs, character.module.ts que une puertos e implementaciones.
-- **`factories/Module.factory.ts`**: Punto de entrada para crear el cliente Apollo y obtener el CharacterModule (usado desde Server Actions).
+  - **application/**: Casos de uso (ej. `get-all-characters.uc.ts`).
+  - **infraestructure/**: Adaptadores, repositorios (Apollo), mappers, DTOs, `character.module.ts` que une puertos e implementaciones.
+- **`factories/Module.factory.ts`**: Punto de entrada para crear el cliente Apollo y obtener el `CharacterModule` (usado desde Server Actions y desde el `route` `/api/characters`).
 - **`routing/paths.ts`**: Rutas públicas (ej. HOME).
-- **`hooks/use-theme.ts`**: Hook para tema (next-themes).
+- **`hooks/use-theme.ts`**: Hook para tema (next-themes) que expone estado `ready`, `isDark`, `isLight`, etc., evitando problemas de hidratación.
 - **`styles/global.css`**: Estilos globales, variables CSS del tema (light/dark), Tailwind.
 - **`providers/`**: Providers de la app (tema, Apollo, etc.).
 - **`assets/`**: Iconos (Moon, Sun, etc.).
 
 ### Flujo de datos (resumen)
 
-1. **`app/page.tsx`** (servidor) llama a `getCharacters` (Server Action).
-2. **`character.action.ts`** usa `ModuleFactory.create()` → `getCharacterModule().getCharacters(page, name)`.
+1. **`app/page.tsx`** (servidor) envuelve `HomeLayout` en `Suspense` con un skeleton.
+2. **`HomeLayout.tsx`** (Server Component) llama a la Server Action `getCharacters` dos veces (para lista 1 y lista 2) usando `ModuleFactory` y el `CharacterModule`.
 3. El **CharacterModule** (lib) usa el repositorio/adaptador Apollo para ejecutar la query GraphQL y devolver DTOs mapeados a entidades de dominio; se serializan a objetos planos para el cliente.
-4. Los datos iniciales se inyectan en **MainProvider** y **HomeLayout**.
-5. La UI (core/Home) usa **MainContext** para listas, selección, paginación y búsqueda; las acciones que necesitan nuevos datos llaman de nuevo a `getCharacters` vía Server Action y actualizan el contexto.
+4. Los datos iniciales se inyectan en **MainProvider** (como `initialList1` e `initialList2`) y se renderizan los layouts de Home.
+5. La UI (core/Home) usa **MainContext** para listas, selección, paginación y búsqueda; cuando necesita nuevos datos en cliente hace fetch a la API interna **`/api/characters`** (que también usa `ModuleFactory` + `CharacterModule`), manteniendo una única fuente de verdad en el dominio.
 
 ---
 
 ## Resumen
 
 - **Rick & Morty Comparador** permite elegir dos personajes y ver episodios en común, con búsqueda y paginación.
-- **Stack**: Next.js 15, React 18, Apollo Client, GraphQL (Rick and Morty API), Tailwind CSS, HeroUI, Vitest, Storybook.
-- **Comandos**: `pnpm dev` (desarrollo), `pnpm build` + `pnpm start` (producción), `pnpm lint`, `pnpm test`, `pnpm storybook`.
-- **Estructura**: `app` (rutas y páginas), `core/Home` (feature comparador y estado), `design-system` (componentes y Storybook), `lib` (Apollo, GraphQL, módulo Character en Clean Architecture, hooks, estilos).
+- **Stack**: Next.js 15, React 18, Apollo Client, GraphQL (Rick and Morty API), Tailwind CSS 4, HeroUI, Vitest, Storybook, Docker.
+- **Comandos**: `pnpm dev` (desarrollo), `pnpm build` + `pnpm start` (producción), `pnpm lint`, `pnpm test`, `pnpm storybook`, `docker build` + `docker run` (contenedor).
+- **Estructura**: `app` (rutas y páginas, + API interna), `core/Home` (feature comparador, contexto y hooks), `design-system` (componentes y Storybook), `lib` (Apollo, GraphQL, módulo Character en Clean Architecture, hooks, estilos).
 
 ---
 

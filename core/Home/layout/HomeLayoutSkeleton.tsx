@@ -1,3 +1,5 @@
+import { CharacterListSkeleton } from "../components/CharacterListSkeleton/CharacterListSkeleton";
+
 import {
   MainContent,
   HeaderMenu,
@@ -7,7 +9,6 @@ import {
   TitleText,
   Paragraph,
 } from "@/design-system";
-import { CharacterListSkeleton } from "../components/CharacterListSkeleton/CharacterListSkeleton";
 
 export const HomeLayoutSkeleton = () => {
   return (

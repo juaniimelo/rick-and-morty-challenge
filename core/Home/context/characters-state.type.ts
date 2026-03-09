@@ -1,30 +1,13 @@
-export interface CharacterInfoPlain {
-  count: number;
-  pages: number;
-  next: number;
-  prev: number;
-}
+import type {
+  CharactersPlainResult,
+  CharacterEpisodePlain,
+  CharacterInfoPlain as DomainCharacterInfoPlain,
+} from "@/lib/modules/Character";
 
-export interface EpisodePlain {
-  id: number;
-  name: string;
-  episode: string;
-  air_date: string;
-}
-
-export interface CharacterPlain {
-  id: number;
-  name: string;
-  image: string;
-  status: string;
-  species: string;
-  episode: EpisodePlain[];
-}
-
-export interface CharactersState {
-  info: CharacterInfoPlain;
-  results: CharacterPlain[];
-}
+export type CharacterInfoPlain = DomainCharacterInfoPlain;
+export type EpisodePlain = CharacterEpisodePlain;
+export type CharactersState = CharactersPlainResult;
+export type CharacterPlain = CharactersPlainResult["results"][number];
 
 export type ListId = "1" | "2";
 

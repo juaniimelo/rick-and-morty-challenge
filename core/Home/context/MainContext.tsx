@@ -12,22 +12,21 @@ import {
   useContext,
   useState,
   useCallback,
+  useMemo,
   type ReactNode,
 } from "react";
 
-import { emptyListState } from "./characters-state.type";
+import { getCharactersClient } from "../services/characterClient.api";
 
-import { getCharacters } from "@/core/Home/actions/character.action";
+import { emptyListState } from "./characters-state.type";
 
 export type SelectedIdsByList = Record<ListId, number | null>;
 
 export interface MainContextValue {
   list1: ListState;
   list2: ListState;
-  /** Personaje seleccionado por columna (solo uno por lista), con nombre y episodios */
   selectedCharacter1: CharacterPlain | null;
   selectedCharacter2: CharacterPlain | null;
-  /** Ids para marcar la card seleccionada en cada lista */
   selectedIds: SelectedIdsByList;
   setSelectedCharacter: (
     listId: ListId,
@@ -56,50 +55,32 @@ export const MainContext = createContext<MainContextValue>(initialState);
 
 interface MainProviderProps {
   children: ReactNode;
-  /** Datos iniciales para cada lista (desde el servidor) */
   initialList1?: CharactersState | null;
   initialList2?: CharactersState | null;
 }
 
-export function MainProvider({
-  children,
-  initialList1 = null,
-  initialList2 = null,
-}: MainProviderProps) {
+function useCharactersListsState(
+  initialList1: CharactersState | null,
+  initialList2: CharactersState | null,
+) {
   const [list1, setList1State] = useState<ListState>({
     ...emptyListState,
     data: initialList1 ?? null,
   });
+
   const [list2, setList2State] = useState<ListState>({
     ...emptyListState,
     data: initialList2 ?? null,
   });
-
-  const [selectedCharacter1, setSelectedCharacter1] =
-    useState<CharacterPlain | null>(null);
-  const [selectedCharacter2, setSelectedCharacter2] =
-    useState<CharacterPlain | null>(null);
-
-  const setSelectedCharacter = useCallback(
-    (listId: ListId, character: CharacterPlain | null) => {
-      if (listId === "1") setSelectedCharacter1(character);
-      else setSelectedCharacter2(character);
-    },
-    [],
-  );
-
-  const selectedIds: SelectedIdsByList = {
-    "1": selectedCharacter1?.id ?? null,
-    "2": selectedCharacter2?.id ?? null,
-  };
 
   const loadList = useCallback(
     async (listId: ListId, page: number, name: string) => {
       const setState = listId === "1" ? setList1State : setList2State;
 
       setState((prev) => ({ ...prev, isLoading: true }));
+
       try {
-        const data = await getCharacters(page, name);
+        const data = await getCharactersClient({ page, name });
 
         setState((prev) => ({
           ...prev,
@@ -137,17 +118,57 @@ export function MainProvider({
     [loadList],
   );
 
-  const value: MainContextValue = {
+  return {
     list1,
     list2,
-    selectedCharacter1,
-    selectedCharacter2,
-    selectedIds,
-    setSelectedCharacter,
     loadList,
     setListPage,
     setListName,
     searchList,
+  };
+}
+
+function useCharacterSelectionState() {
+  const [selectedCharacter1, setSelectedCharacter1] =
+    useState<CharacterPlain | null>(null);
+  const [selectedCharacter2, setSelectedCharacter2] =
+    useState<CharacterPlain | null>(null);
+
+  const setSelectedCharacter = useCallback(
+    (listId: ListId, character: CharacterPlain | null) => {
+      if (listId === "1") setSelectedCharacter1(character);
+      else setSelectedCharacter2(character);
+    },
+    [],
+  );
+
+  const selectedIds: SelectedIdsByList = useMemo(
+    () => ({
+      "1": selectedCharacter1?.id ?? null,
+      "2": selectedCharacter2?.id ?? null,
+    }),
+    [selectedCharacter1, selectedCharacter2],
+  );
+
+  return {
+    selectedCharacter1,
+    selectedCharacter2,
+    selectedIds,
+    setSelectedCharacter,
+  };
+}
+
+export function MainProvider({
+  children,
+  initialList1 = null,
+  initialList2 = null,
+}: MainProviderProps) {
+  const listsState = useCharactersListsState(initialList1, initialList2);
+  const selectionState = useCharacterSelectionState();
+
+  const value: MainContextValue = {
+    ...listsState,
+    ...selectionState,
   };
 
   return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

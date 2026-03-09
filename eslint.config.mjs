@@ -29,6 +29,7 @@ export default defineConfig([globalIgnores([
     "**/*.css",
     "**/.changeset",
     "**/dist",
+    "**/storybook-static",
     "esm/*",
     "public/*",
     "tests/*",
@@ -100,6 +101,7 @@ export default defineConfig([globalIgnores([
         "no-unused-vars": "off",
         "unused-imports/no-unused-vars": "off",
         "unused-imports/no-unused-imports": "warn",
+        "@next/next/no-page-custom-font": "off",
 
         "@typescript-eslint/no-unused-vars": ["warn", {
             args: "after-used",

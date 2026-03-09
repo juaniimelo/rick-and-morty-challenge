@@ -66,6 +66,8 @@
   --app-episodes-badge-shared-text-color: #ffffff;
 
   --app-footer-border-color: #eef3f5;
+
+  --app-button-bg-color-avatar: #e9eef0;
 }
 .dark {
   --app-background: #121f20;
@@ -112,6 +114,8 @@
   --app-episodes-badge-shared-text-color: #ffffff;
 
   --app-footer-border-color: #21363f;
+
+  --app-button-bg-color-avatar: #21363f;
 }
 /* ============================================================================= */
 
@@ -233,4 +237,8 @@
 
 .border-app-footer-border-color {
   border-color: var(--app-footer-border-color);
+}
+
+.bg-app-button-bg-color-avatar {
+  background-color: var(--app-button-bg-color-avatar);
 }

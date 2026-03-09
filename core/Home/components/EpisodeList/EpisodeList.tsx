@@ -26,7 +26,7 @@ export const EpisodeList = ({
       {episodes.map((ep) => (
         <li
           key={ep.id}
-          className="flex flex-col gap-0.5 py-2 px-3 rounded-md bg-app-character-card-bg-color border border-app-character-card-border-color"
+          className="flex flex-col gap-1.5 py-2 px-3 rounded-md bg-app-character-card-bg-color border border-app-character-card-border-color"
         >
           <span
             className="text-sm font-medium text-app-character-card-text-color truncate"
@@ -34,9 +34,17 @@ export const EpisodeList = ({
           >
             {ep.name}
           </span>
-          <span className="text-xs text-app-text-gray-light">
-            {ep.episode} · {ep.air_date}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              aria-label={`Episodio ${ep.episode}`}
+              className="inline-flex shrink-0 px-2 py-0.5 text-xs font-semibold rounded-md bg-app-episodes-badge-shared-color text-app-episodes-badge-shared-text-color"
+            >
+              {ep.episode}
+            </span>
+            <span className="text-xs text-app-text-gray-light">
+              {ep.air_date}
+            </span>
+          </div>
         </li>
       ))}
     </ul>
