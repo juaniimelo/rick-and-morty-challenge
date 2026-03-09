@@ -1,7 +1,8 @@
 FROM node:22-alpine AS base
 
 ENV PNPM_HOME="/pnpm" \
-    NEXT_TELEMETRY_DISABLED=1
+    NEXT_TELEMETRY_DISABLED=1 \
+    NEXT_OUTPUT_STANDALONE="true"
 ENV PATH="$PNPM_HOME:$PATH"
 
 RUN corepack enable
@@ -37,6 +38,9 @@ RUN addgroup -S nextjs && adduser -S nextjs -G nextjs
 COPY --from=build /app/public ./public
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
+
+# Aseguramos permisos de escritura para la caché de Next/Image
+RUN mkdir -p .next/cache && chown -R nextjs:nextjs .next
 
 USER nextjs
 
